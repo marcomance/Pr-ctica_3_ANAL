@@ -218,29 +218,40 @@ short average_search_time(pfunc_search metodo, pfunc_key_generator generator,
 {
 
   PDICT dict;
-  int *perm;
+  int *perm = NULL;
   int *keys = NULL;
   int total_keys;
-  int i, obs_total = 0;
+  int i, obs, pos, obs_total = 0;
   clock_t t_ini, t_fin;
+
+  assert(metodo != NULL);
+  assert(generator != NULL);
+  assert(N > 0);
+  assert(n_times > 0);
+  assert(ptime != NULL);
+  
   dict = init_dictionary(N, order);
   if (dict == NULL)
   {
     return ERR;
   }
+  
   perm = generate_perm(N);
   if (perm == NULL)
   {
     free_dictionary(dict);
     return ERR;
   }
+  
   if (massive_insertion_dictionary(dict, perm, N) == ERR)
   {
     free_dictionary(dict);
     free(perm);
     return ERR;
   }
+  
   total_keys = n_times * N;
+  
   keys = malloc(total_keys * sizeof(int));
   if (keys == NULL)
   {
@@ -248,13 +259,13 @@ short average_search_time(pfunc_search metodo, pfunc_key_generator generator,
     free(perm);
     return ERR;
   }
+  
   generator(keys, total_keys, N); /*Cambiar si eso a la otra en exercise2*/
 
   t_ini = clock();
   for (i = 0; i < total_keys; i++)
   {
-    int pos;
-    int obs = search_dictionary(dict, keys[i], &pos, metodo);
+    obs = search_dictionary(dict, keys[i], &pos, metodo);
     if (obs == ERR)
     {
       free(keys);
@@ -267,8 +278,8 @@ short average_search_time(pfunc_search metodo, pfunc_key_generator generator,
   t_fin = clock();
 
   ptime->N = N;
-  ptime->n_elems = n_times;
-  ptime->time = (double)(t_fin - t_ini) / CLOCKS_PER_SEC;
+  ptime->n_elems = total_keys;
+  ptime->time = ((double)(t_fin - t_ini) / CLOCKS_PER_SEC) / total_keys;
   ptime->average_ob = (double)obs_total / (double)total_keys;
 
   /* 8. Liberar memoria */
@@ -277,3 +288,4 @@ short average_search_time(pfunc_search metodo, pfunc_key_generator generator,
   free_dictionary(dict);
   return OK;
 }
+
