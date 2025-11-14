@@ -263,8 +263,8 @@ short average_search_time(pfunc_search metodo, pfunc_key_generator generator,
   
   generator(keys, total_keys, N); /*Cambiar si eso a la otra en exercise2*/
 
-  min_ob = 0;
-  max_ob = N;
+  min_ob = N;
+  max_ob = 0;
   t_ini = clock();
   for (i = 0; i < total_keys; i++)
   {
@@ -279,11 +279,11 @@ short average_search_time(pfunc_search metodo, pfunc_key_generator generator,
     obs_total += obs;
 
     if (max_ob < obs){
-      max_ob = ob;
+      max_ob = obs;
     }
 
     if (min_ob > obs){
-      min_ob = ob;
+      min_ob = obs;
     }
   }
   t_fin = clock();
@@ -292,6 +292,8 @@ short average_search_time(pfunc_search metodo, pfunc_key_generator generator,
   ptime->n_elems = total_keys;
   ptime->time = ((double)(t_fin - t_ini) / CLOCKS_PER_SEC) / total_keys;
   ptime->average_ob = (double)obs_total / (double)total_keys;
+  ptime->min_ob = min_ob;
+  ptime->max_ob = max_ob;
 
   /* 8. Liberar memoria */
   free(keys);
@@ -299,5 +301,6 @@ short average_search_time(pfunc_search metodo, pfunc_key_generator generator,
   free_dictionary(dict);
   return OK;
 }
+
 
 
