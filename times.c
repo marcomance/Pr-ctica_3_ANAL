@@ -263,7 +263,7 @@ short average_search_time(pfunc_search metodo, pfunc_key_generator generator,
   
   generator(keys, total_keys, N); /*Cambiar si eso a la otra en exercise2*/
 
-  min_ob = INT_MAX
+  min_ob = INT_MAX;
   max_ob = INT_MIN;
   t_ini = clock();
   for (i = 0; i < total_keys; i++)

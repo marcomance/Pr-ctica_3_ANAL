@@ -25,6 +25,9 @@
 #define SORTED 1
 #define NOT_SORTED 0
 
+#include <assert.h>
+#include "sorting.h"
+
 /* type definitions */
 typedef struct dictionary {
   int size; /* table size */

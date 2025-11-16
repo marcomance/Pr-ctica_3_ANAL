@@ -24,6 +24,18 @@
  */
   
 /**
+ *  Function: swap
+ *            This function swaps two elements in different positions
+ */
+static void swap(int *a, int *b){
+  int temp;
+
+  temp = *a;
+  *a = *b;
+  *b = temp;
+}
+
+/**
  *  Function: uniform_key_generator
  *               This function generates all keys from 1 to max in a sequential
  *               manner. If n_keys == max, each key will just be generated once.
@@ -220,15 +232,6 @@ int lin_auto_search(int *table,int F,int L,int key, int *ppos)
 
   *ppos = NOT_FOUND;
   return ob;
-}
-
-
-void swap(int *a, int *b){
-  int temp;
-
-  temp = *a;
-  *a = *b;
-  *b = temp;
 }
 
 

@@ -12,6 +12,8 @@
 #ifndef TIMES_H
 #define TIMES_H
 
+#include <limits.h>
+
 /* constants */
 
 #ifndef ERR
