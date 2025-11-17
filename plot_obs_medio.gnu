@@ -4,6 +4,8 @@ set ylabel "Operaciones básicas medias"
 set grid
 set key left top
 
+set logscale y 
+
 plot \
     "lin_search.log" using 1:3 with linespoints title "Lineal", \
     "bin_search.log" using 1:3 with linespoints title "Binaria"
