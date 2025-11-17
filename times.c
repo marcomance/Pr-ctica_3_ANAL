@@ -290,7 +290,7 @@ short average_search_time(pfunc_search metodo, pfunc_key_generator generator,
 
   ptime->N = N;
   ptime->n_elems = total_keys;
-  ptime->time = ((double)(t_fin - t_ini) / CLOCKS_PER_SEC) / total_keys;
+  ptime->time = ((double)(t_fin - t_ini) / CLOCKS_PER_SEC) * 1e6 / total_keys; /*Lo hemos guardado en microsegundos porque sino se aproximaban todos a 0*/
   ptime->average_ob = (double)obs_total / (double)total_keys;
   ptime->min_ob = min_ob;
   ptime->max_ob = max_ob;
