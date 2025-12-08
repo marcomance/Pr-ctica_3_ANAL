@@ -70,9 +70,11 @@ void potential_key_generator(int *keys, int n_keys, int max)
 
 PDICT init_dictionary (int size, char order)
 {
-  PDICT dic;
+  PDICT dic = NULL;
 
 	assert(size >= 0);
+
+  assert(order == SORTED || order == NOT_SORTED);
 
   dic = malloc(sizeof(DICT));
   if (dic == NULL){
@@ -127,7 +129,8 @@ int insert_dictionary(PDICT pdict, int key)
     pdict->n_data ++;
   }
 
-  return OK;
+  /* Devolvemos 1 que es la op de la inserción */
+  return 1;
 }
 
 int massive_insertion_dictionary (PDICT pdict,int *keys, int n_keys)
@@ -144,7 +147,7 @@ int massive_insertion_dictionary (PDICT pdict,int *keys, int n_keys)
       return ERR;
     }
 
-    ob ++;
+    ob += status;
   }
 
   return ob;
