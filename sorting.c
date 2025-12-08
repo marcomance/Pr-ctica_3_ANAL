@@ -106,6 +106,8 @@ int mergesort(int* tabla, int ip, int iu) {
     int count = 0;
     int status;
 
+    assert(tabla != NULL);
+    
     if (ip > iu)
         return ERR;
 
