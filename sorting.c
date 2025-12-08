@@ -1,56 +1,42 @@
 /**
  *
- * Descripcion: Implementacion de funciones de ordenamiento
+ * Descripcion: Implementation of sorting functions
  *
  * Fichero: sorting.c
- * Autor: Ruben García, Marco Manceñido
+ * Autor: Carlos Aguirre
  * Version: 1.0
  * Fecha: 16-09-2019
  *
  */
 
+
 #include "sorting.h"
 #include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
+void swap(int *a, int *b)
+{
+    int temp;
 
-/***************************************************/
-/* Funcion: swap                                   */
-/* Autores: Ruben García, Marco Manceñido         */
-/*                                                 */
-/* Funcion que intercambia dos elementos          */
-/*                                                 */
-/* Entrada:                                        */
-/* int *a: primer elemento                         */
-/* int *b: segundo elemento                        */
-/* Salida: void                                   */
-/***************************************************/
-static void swap(int *a, int *b) {
-    int temp = *a;
+    if (!a || !b) {
+        return; 
+    }
+
+    temp = *a;
     *a = *b;
     *b = temp;
 }
 
 /***************************************************/
-/* Funcion: InsertSort                              */
-/* Autores: Ruben García, Marco Manceñido         */
-/*                                                 */
-/* Funcion que implementa el algoritmo InsertSort */
-/*                                                 */
-/* Entrada:                                        */
-/* int *array: array a ordenar                     */
-/* int ip: indice inicial                           */
-/* int iu: indice final                             */
-/* Salida: int: numero de operaciones basicas     */
+/* Function: InsertSort    Date:                   */
+/* Your comment                                    */
 /***************************************************/
 int InsertSort(int *array, int ip, int iu)
 {
     int size, i, j, key;
-    int counter = 0;
+    int counter = 0; 
 
-    assert(array != NULL);
-    assert(ip >= 0);
-    assert(iu >= ip);
+    if (!array || ip < 0 || iu < ip) {
+        return ERR;
+    }
 
     size = iu - ip + 1;
 
@@ -59,7 +45,7 @@ int InsertSort(int *array, int ip, int iu)
         j = ip + i - 1;
 
         while (j >= ip) {
-            counter++;
+            counter++;  
             if (array[j] > key) {
                 array[j + 1] = array[j];
                 j--;
@@ -74,32 +60,27 @@ int InsertSort(int *array, int ip, int iu)
     return counter;
 }
 
+
+
+
 /***************************************************/
-/* Funcion: BubbleSort                              */
-/* Autores: Ruben García, Marco Manceñido         */
-/*                                                 */
-/* Funcion que implementa el algoritmo BubbleSort */
-/*                                                 */
-/* Entrada:                                        */
-/* int *array: array a ordenar                     */
-/* int ip: indice inicial                           */
-/* int iu: indice final                             */
-/* Salida: int: numero de operaciones basicas     */
+/* Function: SelectSort    Date:                   */
+/* Your comment                                    */
 /***************************************************/
 int BubbleSort(int *array, int ip, int iu)
 {
     int i, j;
     int size, counter = 0;
 
-    assert(array != NULL);
-    assert(ip >= 0);
-    assert(iu >= ip);
+    if (!array || ip < 0 || iu < ip) {
+        return ERR;
+    }
 
     size = iu - ip + 1;
 
     for (i = 0; i < size - 1; i++) {
         for (j = ip; j < iu - i; j++) {
-            counter++;
+            counter++; 
             if (array[j] > array[j + 1]) {
                 swap(&array[j], &array[j + 1]);
             }
@@ -109,84 +90,81 @@ int BubbleSort(int *array, int ip, int iu)
     return counter;
 }
 
-/***************************************************/
-/* Funcion: mergesort                               */
-/* Autores: Ruben García, Marco Manceñido         */
-/*                                                 */
-/* Funcion que implementa el algoritmo MergeSort  */
-/*                                                 */
-/* Entrada:                                        */
-/* int *tabla: array a ordenar                     */
-/* int ip: indice inicial                           */
-/* int iu: indice final                             */
-/* Salida: int: numero de operaciones basicas     */
-/***************************************************/
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define OK 0
+#define ERR -1
+
+int merge(int* tabla, int ip, int iu, int imedio);
+int mergesort(int* tabla, int ip, int iu);
+
 int mergesort(int* tabla, int ip, int iu) {
     int medio;
     int count = 0;
+    int aux1;
+    int aux2;
+    int aux3;
 
-    assert(ip <= iu);
+    if (ip > iu)
+        return ERR;
 
-    if (ip == iu) {
-        return 0;
-    } 
+    if (ip == iu)
+        return 0; /* no operaciones */
 
     medio = (ip + iu) / 2;
 
-    count += mergesort(tabla, ip, medio);
-    count += mergesort(tabla, medio + 1, iu);
-    count += merge(tabla, ip, iu, medio);
+    aux1 = mergesort(tabla, ip, medio);
+    if(aux1 == ERR){
+        return ERR;
+    }
 
-    return count;
+    aux2 = mergesort(tabla, medio + 1, iu);
+    if(aux2 == ERR){
+        return ERR;
+    }
+    aux3= merge(tabla, ip, iu, medio);
+    if(aux3 == ERR){
+        return ERR;
+    }
+
+    return aux1 + aux2 + aux3;
 }
 
-/***************************************************/
-/* Funcion: merge                                   */
-/* Autores: Ruben García, Marco Manceñido         */
-/*                                                 */
-/* Funcion que fusiona dos mitades ordenadas      */
-/*                                                 */
-/* Entrada:                                        */
-/* int *tabla: array a fusionar                    */
-/* int ip: indice inicial                           */
-/* int iu: indice final                             */
-/* int imedio: indice medio                          */
-/* Salida: int: numero de operaciones basicas     */
-/***************************************************/
 int merge(int* tabla, int ip, int iu, int imedio) {
     int *Taux;
     int i = ip;
     int j = imedio + 1;
     int k = 0;
     int n = iu - ip + 1;
-    int count = 0;
-
-    assert(tabla != NULL);
-    assert(ip <= iu);
+    int count = 0; /* operaciones básicas */
 
     Taux = (int*)malloc(n * sizeof(int));
-    if (Taux == NULL) {
+    if (Taux == NULL)
         return ERR;
-    }
 
+    /* Comparaciones y asignaciones principales */
     while (i <= imedio && j <= iu) {
         if (tabla[i] <= tabla[j])
-            Taux[k++] = tabla[i++];
+            Taux[k++] = tabla[i++]; /* asignación */
         else
-            Taux[k++] = tabla[j++];
-        count++;
+            Taux[k++] = tabla[j++]; /* asignación */
+        count++; /* por la asignación del elemento */
     }
 
     while (i <= imedio) {
         Taux[k++] = tabla[i++];
-        count++;
+        count++; /* asignación */
     }
 
     while (j <= iu) {
         Taux[k++] = tabla[j++];
-        count++;
+        count++; /* asignación */
     }
 
+    /* Copiar de vuelta a tabla */
     for (k = 0; k < n; k++) {
         tabla[ip + k] = Taux[k];
     }
@@ -195,200 +173,201 @@ int merge(int* tabla, int ip, int iu, int imedio) {
     return count;
 }
 
-/***************************************************/
-/* Funcion: quicksort                               */
-/* Autores: Ruben García, Marco Manceñido         */
-/*                                                 */
-/* Funcion que implementa el algoritmo QuickSort  */
-/*                                                 */
-/* Entrada:                                        */
-/* int *tabla: array a ordenar                     */
-/* int ip: indice inicial                           */
-/* int iu: indice final                             */
-/* Salida: int: numero de operaciones basicas     */
-/***************************************************/
+
+
+
 int quicksort(int* tabla, int ip, int iu) {
     int M;
-    int count = 0, status;
+    int count = 0;
+    int aux;
 
-    assert(tabla != NULL);
-    assert(ip <= iu);
-
-    if (ip >= iu) {
-        return 0; 
-    }
-
-    status = partition(tabla, ip, iu, &M);
-    if (status == ERR) {
+    if (ip > iu)
         return ERR;
-    }
-    count += status;
+
+    if (ip == iu)
+        return 0; /* sin operaciones básicas */
+
+    aux = partition(tabla, ip, iu, &M);
+    if (aux == ERR)
+        return ERR;
+    count += aux; /* operaciones en partition */
 
     if (ip < M - 1) {
-        status = quicksort(tabla, ip, M - 1);
-        if (status == ERR) {
+        aux = quicksort(tabla, ip, M - 1);
+        if (aux == ERR)
             return ERR;
-        }
-        count += status;
+        count += aux;
     }
 
     if (M + 1 < iu) {
-        status = quicksort(tabla, M + 1, iu);
-        if (status == ERR) {
+        aux = quicksort(tabla, M + 1, iu);
+        if (aux == ERR)
             return ERR;
-        }
-        count += status;
+        count += aux;
     }
 
     return count;
 }
 
-/***************************************************/
-/* Funcion: partition                               */
-/* Autores: Ruben García, Marco Manceñido         */
-/*                                                 */
-/* Funcion que particiona un array para QuickSort */
-/*                                                 */
-/* Entrada:                                        */
-/* int *tabla: array a particionar                 */
-/* int ip: indice inicial                           */
-/* int iu: indice final                             */
-/* int *pos: posicion del pivote                     */
-/* Salida: int: numero de operaciones basicas     */
-/***************************************************/
 int partition(int* tabla, int ip, int iu, int *pos) {
-    int pivote, i, j;
+    int pivote, i, j, tmp;
     int medio;
-    int count = 0, status; 
+    int count = 0; /* operaciones básicas */
 
-    assert(tabla != NULL);
-    assert(ip <= iu);
-    assert(pos != NULL);
-
-    status = median_stat(tabla, ip, iu, &medio);
-    if (status == ERR) {
+    /* Mediana de tres */
+    if (median_avg(tabla, ip, iu, &medio) == ERR)
         return ERR;
-    }
-    count += status;
 
+    /* pivote = tabla[medio] */
     pivote = tabla[medio];
-    count++; 
+    count++; /* lectura del pivote */
 
-    swap(&tabla[medio], &tabla[iu]);
-    count += SWAP_OP; 
+    /* Mover pivote al final */
+    tmp = tabla[medio];
+    tabla[medio] = tabla[iu];
+    tabla[iu] = tmp;
+    count += 3; /* tres asignaciones */
 
-    for (i = ip, j = ip; j < iu; j++) {
-        count++; 
+    i = ip;
+    for (j = ip; j < iu; j++) {
+        count++; /* comparación tabla[j] < pivote */
         if (tabla[j] < pivote) {
-            if (i != j) {
-                swap(&tabla[i], &tabla[j]);
-                count += SWAP_OP; 
-            }
+            tmp = tabla[i];
+            tabla[i] = tabla[j];
+            tabla[j] = tmp;
+            count += 3; /* tres asignaciones por swap */
             i++;
         }
     }
 
-    swap(&tabla[i], &tabla[iu]);
-    count += SWAP_OP; 
+    /* Colocar el pivote en su posición final */
+    tmp = tabla[i];
+    tabla[i] = tabla[iu];
+    tabla[iu] = tmp;
+    count += 3; /* tres asignaciones */
 
     *pos = i;
     return count;
 }
 
-/***************************************************/
-/* Funcion: median                                  */
-/* Autores: Ruben García, Marco Manceñido         */
-/*                                                 */
-/* Funcion que devuelve el primer elemento como pivote */
-/*                                                 */
-/* Entrada:                                        */
-/* int *tabla: array                               */
-/* int ip: indice inicial                           */
-/* int iu: indice final                             */
-/* int *pos: posicion del pivote                     */
-/* Salida: int: 0 operaciones                      */
-/***************************************************/
 int median(int *tabla, int ip, int iu, int *pos) {
-    assert(tabla != NULL);
-    assert(pos != NULL); 
-    assert(ip <= iu);
-
-    *pos = ip;
-
-    return 0;
-}
-
-/***************************************************/
-/* Funcion: median_avg                              */
-/* Autores: Ruben García, Marco Manceñido         */
-/*                                                 */
-/* Funcion que devuelve el elemento medio como pivote */
-/*                                                 */
-/* Entrada:                                        */
-/* int *tabla: array                               */
-/* int ip: indice inicial                           */
-/* int iu: indice final                             */
-/* int *pos: posicion del pivote                     */
-/* Salida: int: 0 operaciones                      */
-/***************************************************/
-int median_avg(int *tabla, int ip, int iu, int *pos) {
-    assert(tabla != NULL);
-    assert(ip <= iu);
-    assert(pos != NULL);
-
-    *pos = (ip + iu) / 2;
-
-    return 0; 
-}
-
-/***************************************************/
-/* Funcion: median_stat                             */
-/* Autores: Ruben García, Marco Manceñido         */
-/*                                                 */
-/* Funcion que devuelve la mediana entre primer,  */
-/* medio y ultimo elemento como pivote             */
-/*                                                 */
-/* Entrada:                                        */
-/* int *tabla: array                               */
-/* int ip: indice inicial                           */
-/* int iu: indice final                             */
-/* int *pos: posicion del pivote                     */
-/* Salida: int: numero de operaciones basicas     */
-/***************************************************/
-int median_stat(int *tabla, int ip, int iu, int *pos) {
-    int a, b, c;
+    int medio = (ip + iu) / 2;
+    int a = tabla[ip];
+    int b = tabla[medio];
+    int c = tabla[iu];
     int count = 0;
-
-    assert(tabla != NULL);
-    assert(ip <= iu);
-    assert(pos != NULL);
-
-    a = tabla[ip];
-    b = tabla[(ip + iu) / 2];
-    c = tabla[iu];
-
-    if (a <= b && b <= c) {
-        *pos = (ip + iu) / 2;
-        count += 2;
-    }
-    else if(c <= b && b <= a) {
-        *pos = (ip + iu) / 2;
-        count += 4;
-    }
-    else if (b <= a && a <= c) {
-        *pos = ip;
-        count += 6;
-    } 
-    else if (c <= a && a <= b) {
-        *pos = ip;
-        count += 8;
-    }
-    else {
-        *pos = iu;
-        count += 8;
-    }
-
+    *pos = ip;
     return count;
+}
+
+int median_avg(int *tabla, int ip, int iu, int *pos) {
+    int medio = (ip + iu) / 2;
+    int a = tabla[ip];
+    int b = tabla[medio];
+    int c = tabla[iu];
+    int count = 0;
+    *pos = medio;
+    return count;
+}
+
+
+/* median_stat: devuelve en *pos el índice (ip..iu) que contiene
+   la mediana entre tabla[ip], tabla[(ip+iu)/2] y tabla[iu].
+   Devuelve OK (0) o ERR (-1) en caso de error (por ejemplo ip>iu).
+*/
+
+
+int median_stat(int *tabla, int ip, int iu, int *pos) {
+    int mid = (iu + ip)/2;
+    int ob_count =0;
+    ob_count ++;
+    if(tabla[ip] < tabla[mid]){
+        ob_count++;
+        if(tabla[mid] < tabla[iu]){
+            *pos = mid;
+            return ob_count;
+
+        }else if(tabla[ip]> tabla[iu]){
+            *pos = ip;
+            return ++ob_count;
+        }else{
+            *pos = iu;
+            return ++ob_count;
+        }
+    }else{
+        ob_count++;
+        if(tabla[ip]< tabla[iu]){
+            *pos = ip;
+            return ob_count;
+
+        }else if(tabla[mid] < tabla[iu]){
+            *pos = iu;
+            return ++ob_count;
+        }
+        else{
+            *pos = mid;
+            return ++ob_count;
+        }
+    }
+    return ERR;
+    
+
+}
+
+/* Variante de partition que usa median_stat como pivote.
+   Además permite acumular operaciones básicas (ops): si ops != NULL,
+   se incrementa *ops por cada comparación entre elementos del array
+   (esto es una definición de ejemplo de "operación básica").
+   Firma: int partition_count(int *tabla, int ip, int iu, int *pos, long *ops)
+   Devuelve OK/ERR y coloca la posición final del pivote en *pos.
+*/
+int partition_count(int *tabla, int ip, int iu, int *pos, long *ops) {
+    int piv_idx;
+    int piv_val;
+    int i, j, tmp;
+    int cmp_result;
+
+    if (tabla == NULL || pos == NULL || ip > iu)
+        return ERR;
+
+    /* obtener índice del pivote usando median_stat */
+    if (median_stat(tabla, ip, iu, &piv_idx) == ERR)
+        return ERR;
+
+    /* opcional: contar la comparación que hace median_stat (si quieres) */
+    /* aquí no incrementamos ops por median_stat internamente,
+       pero podrías sumar 2 ó 3 si quieres reflejar esas comparaciones. */
+
+    /* llevar pivote al final (iu) */
+    tmp = tabla[piv_idx];
+    tabla[piv_idx] = tabla[iu];
+    tabla[iu] = tmp;
+
+    piv_val = tabla[iu];
+    i = ip;
+
+    for (j = ip; j < iu; j++) {
+        /* contar comparación tabla[j] < piv_val */
+        if (ops) (*ops)++;
+
+        if (tabla[j] < piv_val) {
+            /* swap tabla[i] <-> tabla[j] */
+            tmp = tabla[i];
+            tabla[i] = tabla[j];
+            tabla[j] = tmp;
+            i++;
+            /* contar también el swap como operaciones si lo deseas:
+               if (ops) (*ops) += SWAP_COST; */
+        }
+    }
+
+    /* colocar pivote en su posición final i */
+    tmp = tabla[i];
+    tabla[i] = tabla[iu];
+    tabla[iu] = tmp;
+
+    *pos = i;
+    return OK;
 }
 
 
