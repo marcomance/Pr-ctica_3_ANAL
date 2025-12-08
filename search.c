@@ -210,7 +210,7 @@ int lin_search(int *table,int F,int L,int key, int *ppos)
   return ob;
 }
 
-int lin_auto_search(int *table,int F,int L,int key, int *ppos)
+int lin_auto_search(int *table, int F, int L, int key, int *ppos)
 {
 	int i, ob = 0;
 
