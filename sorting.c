@@ -104,9 +104,7 @@ int mergesort(int* tabla, int ip, int iu);
 int mergesort(int* tabla, int ip, int iu) {
     int medio;
     int count = 0;
-    int aux1;
-    int aux2;
-    int aux3;
+    int status;
 
     if (ip > iu)
         return ERR;
@@ -116,21 +114,25 @@ int mergesort(int* tabla, int ip, int iu) {
 
     medio = (ip + iu) / 2;
 
-    aux1 = mergesort(tabla, ip, medio);
-    if(aux1 == ERR){
+    status = mergesort(tabla, ip, medio);
+    if(status == ERR){
         return ERR;
     }
+    count += status;
 
-    aux2 = mergesort(tabla, medio + 1, iu);
-    if(aux2 == ERR){
+    status = mergesort(tabla, medio + 1, iu);
+    if(status == ERR){
         return ERR;
     }
-    aux3= merge(tabla, ip, iu, medio);
-    if(aux3 == ERR){
-        return ERR;
-    }
+    count += status;
 
-    return aux1 + aux2 + aux3;
+    status= merge(tabla, ip, iu, medio);
+    if(status == ERR){
+        return ERR;
+    }
+    count += status;
+
+    return count;
 }
 
 int merge(int* tabla, int ip, int iu, int imedio) {
