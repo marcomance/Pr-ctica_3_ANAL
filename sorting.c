@@ -95,9 +95,6 @@ int BubbleSort(int *array, int ip, int iu)
 #include <stdio.h>
 #include <stdlib.h>
 
-#define OK 0
-#define ERR -1
-
 int merge(int* tabla, int ip, int iu, int imedio);
 int mergesort(int* tabla, int ip, int iu);
 
