@@ -1,0 +1,148 @@
+Guía de Gnuplot para graficar mediante archivos
+1️⃣ Preparar los datos
+
+Los datos deben estar en un archivo de texto, normalmente .txt o .dat.
+
+Formato típico: columnas separadas por espacios o tabuladores.
+
+Ejemplo: quicksearch_results.txt
+
+# tamaño_perm  tiempo_ms  OB
+100  0.002  123
+150  0.003  234
+200  0.0045 345
+250  0.006  456
+...
+
+
+La primera línea puede ser un comentario con #.
+
+Columnas: tamaño de la permutación, tiempo medio, número de operaciones básicas (OBs).
+
+2️⃣ Abrir Gnuplot
+
+En Linux/macOS: abre terminal y escribe gnuplot.
+
+En Windows: abre el programa Gnuplot o el terminal de comandos.
+
+3️⃣ Configurar el estilo de los gráficos
+# Títulos y etiquetas
+set title "QuickSearch: Tiempo medio vs Tamaño de permutación"
+set xlabel "Tamaño de la permutación"
+set ylabel "Tiempo medio (ms)"
+
+# Leyenda
+set key left top
+
+# Rejilla
+set grid
+
+# Salida a pantalla
+set terminal qt
+
+4️⃣ Graficar directamente desde el archivo
+
+Sintaxis básica:
+
+plot 'quicksearch_results.txt' using 1:2 with linespoints title "Tiempo medio"
+
+
+using 1:2 → columna 1 (x), columna 2 (y).
+
+with linespoints → dibuja líneas con puntos.
+
+title "..." → leyenda de la curva.
+
+Para graficar varias columnas:
+
+plot 'quicksearch_results.txt' using 1:2 with linespoints title "Tiempo", \
+     'quicksearch_results.txt' using 1:3 with linespoints title "OBs"
+
+5️⃣ Ajuste de curva (curve fitting)
+
+Definir la función a ajustar:
+
+f(x) = a*x**2 + b*x + c
+
+
+Dar valores iniciales (recomendado para funciones no lineales):
+
+a = 1
+b = 1
+c = 1
+
+
+Ejecutar ajuste:
+
+fit f(x) 'quicksearch_results.txt' using 1:2 via a,b,c
+
+
+Después del ajuste, Gnuplot muestra:
+
+Valores de a, b, c
+
+Errores estándar
+
+Sum of Squares of Residuals y RMS
+
+Graficar los datos y la curva ajustada:
+
+plot 'quicksearch_results.txt' using 1:2 with points title "Datos", \
+     f(x) with lines title "Ajuste polinómico"
+
+6️⃣ Exportar gráficos
+
+Para guardar en PNG:
+
+set terminal pngcairo size 800,600 enhanced font 'Arial,12'
+set output "quicksearch_tiempo.png"
+replot
+set output
+
+
+Para PDF:
+
+set terminal pdfcairo size 8,6 font 'Arial,12'
+set output "quicksearch_tiempo.pdf"
+replot
+set output
+
+
+Siempre usar replot después de definir set output para guardar la última gráfica.
+
+7️⃣ Tips útiles para prácticas de algoritmos
+
+Usar comentarios en los archivos de datos para indicar parámetros de los experimentos.
+
+Graficar varias curvas en un solo gráfico usando \ para separar líneas de plot.
+
+Ajuste de curva solo para casos medios (evitar casos extremos).
+
+Registrar valores de parámetros de la función ajustada para luego incluirlos en el informe.
+
+Verificar la consistencia de los datos: no debe haber tamaños de permutación repetidos ni datos faltantes.
+
+Separador de columnas: si no es espacio, usar set datafile separator ',' para CSV.
+
+8️⃣ Ejemplo completo
+# Configuración
+set title "QuickSearch - Tiempo medio"
+set xlabel "Tamaño de permutación"
+set ylabel "Tiempo medio (ms)"
+set grid
+set key left top
+
+# Función a ajustar
+f(x) = a*x**2 + b*x + c
+a=1; b=1; c=1
+fit f(x) 'quicksearch_results.txt' using 1:2 via a,b,c
+
+# Graficar datos y ajuste
+plot 'quicksearch_results.txt' using 1:2 with points title "Datos", \
+     f(x) with lines title "Ajuste polinómico"
+
+# Guardar como PNG
+set terminal pngcairo size 800,600 enhanced font 'Arial,12'
+set output "quicksearch_tiempo.png"
+replot
+set output

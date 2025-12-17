@@ -14,19 +14,11 @@
 #include <stdlib.h>
 #include <math.h>
 
-/**
- *  Key generation functions
- *
- *  Description: Receives the number of keys to generate in the n_keys
- *               parameter. The generated keys go from 1 to max. The
- * 				 keys are returned in the keys parameter which must be 
- *				 allocated externally to the function.
- */
-  
-/**
- *  Function: swap
- *            This function swaps two elements in different positions
- */
+/***************************************************/
+/* Function: swap
+   Intercambia dos enteros apuntados por a y b.
+   Función auxiliar interna para otros algoritmos.
+***************************************************/
 static void swap(int *a, int *b){
   int temp;
 
@@ -35,11 +27,12 @@ static void swap(int *a, int *b){
   *b = temp;
 }
 
-/**
- *  Function: uniform_key_generator
- *               This function generates all keys from 1 to max in a sequential
- *               manner. If n_keys == max, each key will just be generated once.
- */
+/***************************************************/
+/* Function: uniform_key_generator
+   Genera n_keys de manera secuencial de 1 a max.
+   Si n_keys > max, se repiten los valores.
+   keys debe estar previamente reservado.
+***************************************************/
 void uniform_key_generator(int *keys, int n_keys, int max)
 {
   int i;
@@ -49,31 +42,34 @@ void uniform_key_generator(int *keys, int n_keys, int max)
   return;
 }
 
-/**
- *  Function: potential_key_generator
- *               This function generates keys following an approximately
- *               potential distribution. The smaller values are much more 
- *               likely than the bigger ones. Value 1 has a 50%
- *               probability, value 2 a 17%, value 3 the 9%, etc.
- */
+/***************************************************/
+/* Function: potential_key_generator
+   Genera n_keys siguiendo una distribución aproximada potencial.
+   Valores pequeños son más frecuentes que los grandes.
+   keys debe estar previamente reservado.
+***************************************************/
 void potential_key_generator(int *keys, int n_keys, int max)
 {
   int i;
 
   for(i = 0; i < n_keys; i++) 
   {
-    keys[i] = .5+max/(1 + max*((double)rand()/(RAND_MAX)));
+    keys[i] = .5 + max / (1 + max * ((double)rand() / (RAND_MAX)));
   }
 
   return;
 }
 
+/***************************************************/
+/* Function: init_dictionary
+   Inicializa un diccionario con tamaño size y tipo de orden (SORTED o NOT_SORTED).
+   Devuelve un puntero al diccionario o NULL si hay error de memoria.
+***************************************************/
 PDICT init_dictionary (int size, char order)
 {
   PDICT dic = NULL;
 
-	assert(size >= 0);
-
+  assert(size >= 0);
   assert(order == SORTED || order == NOT_SORTED);
 
   dic = malloc(sizeof(DICT));
@@ -94,6 +90,10 @@ PDICT init_dictionary (int size, char order)
   return dic;
 }
 
+/***************************************************/
+/* Function: free_dictionary
+   Libera la memoria del diccionario y su tabla.
+***************************************************/
 void free_dictionary(PDICT pdict)
 {
   if (pdict != NULL){
@@ -102,11 +102,17 @@ void free_dictionary(PDICT pdict)
   }
 }
 
+/***************************************************/
+/* Function: insert_dictionary
+   Inserta un elemento key en el diccionario.
+   Si está ordenado, lo inserta en la posición correcta.
+   Devuelve 1 como operación de inserción o ERR si no hay espacio.
+***************************************************/
 int insert_dictionary(PDICT pdict, int key)
 {
   int j; 
 
-	assert(pdict != NULL);
+  assert(pdict != NULL);
 
   if (pdict->n_data >= pdict->size){
     return ERR;
@@ -116,6 +122,7 @@ int insert_dictionary(PDICT pdict, int key)
     pdict->table[pdict->n_data] = key;
     j = pdict->n_data - 1;
 
+    /** Desplaza elementos mayores para insertar en orden */
     while (j >= 0 && pdict->table[j] > key){
       pdict->table[j+1] = pdict->table[j];
       j--;
@@ -125,19 +132,24 @@ int insert_dictionary(PDICT pdict, int key)
     pdict->n_data ++;
   }
   else{
+    /** Inserción simple en posición final si no está ordenado */
     pdict->table[pdict->n_data] = key;
     pdict->n_data ++;
   }
 
-  /* Devolvemos 1 que es la op de la inserción */
   return 1;
 }
 
+/***************************************************/
+/* Function: massive_insertion_dictionary
+   Inserta múltiples claves en el diccionario usando insert_dictionary.
+   Devuelve el número total de operaciones realizadas o ERR si falla alguna inserción.
+***************************************************/
 int massive_insertion_dictionary (PDICT pdict,int *keys, int n_keys)
 {
   int i, ob = 0, status = 0;
 
-	assert(pdict != NULL);
+  assert(pdict != NULL);
   assert(keys != NULL);
   assert(n_keys > 0);
 
@@ -153,48 +165,61 @@ int massive_insertion_dictionary (PDICT pdict,int *keys, int n_keys)
   return ob;
 }
 
+/***************************************************/
+/* Function: search_dictionary
+   Busca un key en el diccionario usando el método proporcionado.
+   Devuelve el número de operaciones y la posición en ppos.
+***************************************************/
 int search_dictionary(PDICT pdict, int key, int *ppos, pfunc_search method)
 {
-	assert(pdict != NULL);
+  assert(pdict != NULL);
   assert(ppos != NULL);
   assert(method != NULL);
 
   return method(pdict->table, 0, pdict->n_data-1, key, ppos);
 }
 
-
-/* Search functions of the Dictionary ADT */
+/***************************************************/
+/* Function: bin_search
+   Búsqueda binaria en array ordenado.
+   Devuelve número de comparaciones realizadas y posición de la clave.
+***************************************************/
 int bin_search(int *table,int F,int L,int key, int *ppos)
 {
   int ob = 0;
-    int mid;
+  int mid;
 
-    assert(table != NULL);
-    assert(F <= L);
-    assert(ppos != NULL);
+  assert(table != NULL);
+  assert(F <= L);
+  assert(ppos != NULL);
 
-    while (F <= L) {
-      ob++; 
-      mid = F + (L - F) / 2;
-      if (table[mid] == key) {
-        *ppos = mid;
-        return ob;
-      }
-      else if (table[mid] < key){
-        F = mid + 1;
-      }
-      else{
-        L = mid - 1;
-      }
+  while (F <= L) {
+    ob++; 
+    mid = F + (L - F) / 2;
+    if (table[mid] == key) {
+      *ppos = mid;
+      return ob;
     }
+    else if (table[mid] < key){
+      F = mid + 1;
+    }
+    else{
+      L = mid - 1;
+    }
+  }
 
-    *ppos = NOT_FOUND;
-    return ob;
+  *ppos = NOT_FOUND;
+  return ob;
 }
 
+/***************************************************/
+/* Function: lin_search
+   Búsqueda lineal en array.
+   Devuelve número de comparaciones realizadas y posición de la clave.
+***************************************************/
 int lin_search(int *table,int F,int L,int key, int *ppos)
 {
-	int i, ob = 0;
+  int i, ob = 0;
 
   assert(table != NULL);
   assert(F <= L);
@@ -209,13 +234,18 @@ int lin_search(int *table,int F,int L,int key, int *ppos)
   }
 
   *ppos = NOT_FOUND;
-
   return ob;
 }
 
+/***************************************************/
+/* Function: lin_auto_search
+   Búsqueda lineal con heurística de auto-organización.
+   Si encuentra la clave y no está en primera posición, la intercambia con el elemento anterior.
+   Devuelve número de comparaciones y nueva posición de la clave.
+***************************************************/
 int lin_auto_search(int *table, int F, int L, int key, int *ppos)
 {
-	int i, ob = 0;
+  int i, ob = 0;
 
   assert(table != NULL);
   assert(F <= L);
@@ -236,5 +266,4 @@ int lin_auto_search(int *table, int F, int L, int key, int *ppos)
   *ppos = NOT_FOUND;
   return ob;
 }
-
 

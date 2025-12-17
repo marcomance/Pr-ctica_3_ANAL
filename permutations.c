@@ -10,7 +10,27 @@
  */
 #include <stdlib.h>
 #include <time.h>
+#include <assert.h>
 #include "permutations.h"
+
+
+/***************************************************/
+/* Function: swap
+   Intercambia el valor de dos enteros apuntados por a y b.
+   Verifica que los punteros no sean NULL antes de hacer el swap.
+***************************************************/
+static void swap(int *a, int *b)
+{
+  int temp;
+
+  if (!a || !b) {
+      return; 
+  }
+
+  temp = *a;
+  *a = *b;
+  *b = temp;
+}
 
 /***************************************************/
 /* Function: random_num Date:                      */
@@ -27,9 +47,8 @@
 /***************************************************/
 int random_num(int inf, int sup)
 {
-  if(inf > sup){
-    return ERR;
-  }
+  assert(inf <= sup);
+
   return rand()/(RAND_MAX+1.)*(sup-inf+1)+inf;
 }
 
@@ -51,7 +70,6 @@ int* generate_perm(int N)
   int *perm;
   int j;
   int num;
-  int dum;
   perm = malloc(N*sizeof(int));
   if(perm==NULL){
     return NULL;
@@ -61,9 +79,7 @@ int* generate_perm(int N)
   }
   for(j=0; j<N; j++){
     num = random_num(j, N-1);
-    dum = perm[j];
-    perm[j] = perm[num];
-    perm[num] = dum;
+    swap(&perm[j], &perm[num]);
   }
   return perm;
 
@@ -89,6 +105,9 @@ int** generate_permutations(int n_perms, int N)
   int **perm;
   int i;
 
+  assert(n_perms >= 1);
+  assert(N >= 1);
+
   perm = malloc(n_perms*sizeof(int*));
   if (perm == NULL){
     return NULL;
@@ -109,15 +128,15 @@ int** generate_permutations(int n_perms, int N)
 
 void free_permutations(int **perm, int n_perms)
 {
-    int i;
+  int i;
 
-    if(perm == NULL){
-        return;
-    }
+  if(perm == NULL){
+      return;
+  }
 
-    for(i = 0; i < n_perms; i++){
-        free(perm[i]);
-    }
+  for(i = 0; i < n_perms; i++){
+      free(perm[i]);
+  }
 
-    free(perm);
+  free(perm);
 }
